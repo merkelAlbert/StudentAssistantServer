@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -42,8 +43,29 @@ namespace StudentAssistantServer
         {
             var collection = Db.GetCollection<ScheduleItem>("Schedule");
             var schedules = collection.Find(filter).ToList();
-            
+
             return schedules[0];
+        }
+
+        public async void AddHomework(HomeworkItem homeworkItem)
+        {
+            var collection = Db.GetCollection<BsonDocument>("Homework");
+            homeworkItem.Id = ObjectId.GenerateNewId().ToString();
+            await collection.InsertOneAsync(homeworkItem.ToBsonDocument());
+        }
+
+        public async void AddSchedule(ScheduleItem scheduleItem)
+        {
+            var collection = Db.GetCollection<BsonDocument>("Schedule");
+            scheduleItem.Id = ObjectId.GenerateNewId().ToString();
+            await collection.InsertOneAsync(scheduleItem.ToBsonDocument());
+        }
+
+        public async Task ChangeHomework(HomeworkItem homeworkItem)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(homeworkItem.Id));
+            var collection = Db.GetCollection<BsonDocument>("Homework");
+            await collection.ReplaceOneAsync(filter, homeworkItem.ToBsonDocument());
         }
     }
 }

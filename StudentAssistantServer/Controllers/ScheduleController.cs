@@ -16,12 +16,20 @@ namespace StudentAssistantServer.Controllers
             _databaseService = databaseService;
         }
 
-        // GET
-        [Route("Schedule/")]
+        [HttpGet]
+        [Route("schedule/")]
         public JsonResult Schedule()
         {
             //Console.WriteLine(Json(_databaseService.GetScheduleByFilter(new BsonDocument())));
             return Json(_databaseService.GetScheduleByFilter(new BsonDocument()));
+        }
+        
+        [HttpPost]
+        [Route("addSchedule/")]
+        public JsonResult AddSchedule([FromBody] ScheduleItem scheduleItem)
+        {
+            _databaseService.AddSchedule(scheduleItem);
+            return Json(null);
         }
     }
 }

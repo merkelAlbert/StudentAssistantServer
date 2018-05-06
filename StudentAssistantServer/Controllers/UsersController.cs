@@ -15,7 +15,8 @@ namespace StudentAssistantServer.Controllers
         }
         
         // GET
-        [Route("Users/{name}")]
+        [HttpGet]
+        [Route("users/{name}")]
         public JsonResult Users([FromRoute] string name)
         {
             return Json(_databaseService.GetDocumentsByFilter(Builders<UserItem>.Filter.Eq("Name", name)));
