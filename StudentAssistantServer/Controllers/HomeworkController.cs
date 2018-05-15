@@ -14,12 +14,29 @@ namespace StudentAssistantServer.Controllers
             _databaseService = databaseService;
         }
 
-        // GET
         [HttpGet]
-        [Route("homework/")]
-        public JsonResult Homework()
+        [Route("homework/{userId}")]
+        public JsonResult Homework([FromRoute] string userId)
         {
-            return Json(_databaseService.GetHomeworkByFilter(new BsonDocument()));
+            //Console.WriteLine(Utils.GetWeekNumber(new DateTime(2018, 2, 7)));
+            var filter = Builders<HomeworkItem>.Filter.Eq("userId", userId);
+            var result = _databaseService.GetItemsByFilter("Homework", filter);
+            if (result != null)
+            {
+                return new JsonResult(new
+                {
+                    homework = result,
+                    status = 200
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    message="Домашние задания не найдены",
+                    status = 517
+                });
+            }
         }
 
         [HttpPost]
@@ -28,16 +45,25 @@ namespace StudentAssistantServer.Controllers
         {
             try
             {
-                _databaseService.AddHomework(homeworkItem);
+                _databaseService.Add("Homework", homeworkItem);
             }
             catch (Exception e)
             {
-                return new JsonResult(new Response("Ошибка при добавлении домашнего задания! Попробуте позже"));
+                return new JsonResult(new
+                {
+                    message = "Ошибка при добавлении домашнего задания!" +
+                              " Попробуйте позже",
+                    status = 502
+                });
             }
 
-            return new JsonResult(new Response("Домашнее задание успешно добавлено"));
+            return new JsonResult(new
+            {
+                message = "Домашнее задание успешно добавлено",
+                status = 200
+            });
         }
-        
+
         [HttpPost]
         [Route("changeHomework/")]
         public JsonResult ChangeHomework([FromBody] HomeworkItem homeworkItem)
@@ -48,10 +74,19 @@ namespace StudentAssistantServer.Controllers
             }
             catch (Exception e)
             {
-                return new JsonResult(new Response("Ошибка при изменении домашнего задания! Попробуте позже"));
+                return new JsonResult(new
+                {
+                    message = "Ошибка при изменении домашнего задания! " +
+                              "Попробуйте позже",
+                    status = 502
+                });
             }
 
-            return new JsonResult(new Response("Домашнее задание успешно изменено"));
+            return new JsonResult(new
+            {
+                message = "Домашнее задание успешно изменено",
+                Status = 200
+            });
         }
     }
 }

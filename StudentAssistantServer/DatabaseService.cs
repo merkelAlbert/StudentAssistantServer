@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -25,47 +26,28 @@ namespace StudentAssistantServer
             Db = client.GetDatabase(Name);
         }
 
-        public List<UserItem> GetDocumentsByFilter(FilterDefinition<UserItem> filter)
+        public List<T> GetItemsByFilter<T>(string collectionName, FilterDefinition<T> filter)
         {
-            var collection = Db.GetCollection<UserItem>("User");
-            var users = collection.Find(filter).ToList();
-            return users;
+            var collection = Db.GetCollection<T>(collectionName);
+            var items = collection.Find(filter).ToList();
+            if (items.Count > 0)
+                return items;
+            return null;
         }
 
-        public List<HomeworkItem> GetHomeworkByFilter(FilterDefinition<HomeworkItem> filter)
-        {
-            var collection = Db.GetCollection<HomeworkItem>("Homework");
-            var homeworks = collection.Find(filter).ToList();
-            return homeworks;
-        }
 
-        public ScheduleItem GetScheduleByFilter(FilterDefinition<ScheduleItem> filter)
-        {
-            var collection = Db.GetCollection<ScheduleItem>("Schedule");
-            var schedules = collection.Find(filter).ToList();
-
-            return schedules[0];
-        }
-
-        public async void AddHomework(HomeworkItem homeworkItem)
-        {
-            var collection = Db.GetCollection<BsonDocument>("Homework");
-            homeworkItem.Id = ObjectId.GenerateNewId().ToString();
-            await collection.InsertOneAsync(homeworkItem.ToBsonDocument());
-        }
-
-        public async void AddSchedule(ScheduleItem scheduleItem)
-        {
-            var collection = Db.GetCollection<BsonDocument>("Schedule");
-            scheduleItem.Id = ObjectId.GenerateNewId().ToString();
-            await collection.InsertOneAsync(scheduleItem.ToBsonDocument());
-        }
-
-        public async Task ChangeHomework(HomeworkItem homeworkItem)
+        public async void ChangeHomework(HomeworkItem homeworkItem)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(homeworkItem.Id));
             var collection = Db.GetCollection<BsonDocument>("Homework");
             await collection.ReplaceOneAsync(filter, homeworkItem.ToBsonDocument());
+        }
+
+        public async void Add<T>(String collectionName, T item) where T : IDatabaseItem
+        {
+            var collection = Db.GetCollection<BsonDocument>(collectionName);
+            item.Id = ObjectId.GenerateNewId().ToString();
+            await collection.InsertOneAsync(item.ToBsonDocument());
         }
     }
 }

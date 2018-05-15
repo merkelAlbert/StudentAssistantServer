@@ -17,19 +17,53 @@ namespace StudentAssistantServer.Controllers
         }
 
         [HttpGet]
-        [Route("schedule/")]
-        public JsonResult Schedule()
+        [Route("schedule/{userId}")]
+        public JsonResult Schedule([FromRoute] string userId)
         {
-            //Console.WriteLine(Json(_databaseService.GetScheduleByFilter(new BsonDocument())));
-            return Json(_databaseService.GetScheduleByFilter(new BsonDocument()));
+            var filter = Builders<ScheduleItem>.Filter.Eq("userId", userId);
+            if (_databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter) != null)
+            {
+                var schedule = _databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter)[0];
+                return new JsonResult(
+                    new
+                    {
+                        schedule = schedule,
+                        subjects = Utils.GetSubjects(schedule),
+                        status = 200
+                    });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    status = 404
+                });
+            }
         }
-        
+
         [HttpPost]
         [Route("addSchedule/")]
         public JsonResult AddSchedule([FromBody] ScheduleItem scheduleItem)
         {
-            _databaseService.AddSchedule(scheduleItem);
-            return Json(null);
+            try
+            {
+                _databaseService.Add("Schedule", scheduleItem);
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(new
+                {
+                    message = "Ошибка при добавлении расписания!" +
+                              " Попробуйте позже",
+                    status = 502
+                });
+            }
+
+            return new JsonResult(new
+            {
+                message = "Расписание успешно добавлено",
+                status = 200
+            });
         }
     }
 }
