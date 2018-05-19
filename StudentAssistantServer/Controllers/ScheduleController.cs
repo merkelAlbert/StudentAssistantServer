@@ -20,49 +20,98 @@ namespace StudentAssistantServer.Controllers
         [Route("schedule/{userId}")]
         public JsonResult Schedule([FromRoute] string userId)
         {
-            var filter = Builders<ScheduleItem>.Filter.Eq("userId", userId);
-            if (_databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter) != null)
+            if (userId != null)
             {
-                var schedule = _databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter)[0];
-                return new JsonResult(
-                    new
-                    {
-                        schedule = schedule,
-                        subjects = Utils.GetSubjects(schedule),
-                        status = 200
-                    });
-            }
-            else
-            {
-                return new JsonResult(new
+                var filter = Builders<ScheduleItem>.Filter.Eq("userId", userId);
+                if (_databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter) != null)
                 {
-                    status = 404
-                });
+                    var schedule = _databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter)[0];
+                    return new JsonResult(
+                        new
+                        {
+                            schedule = schedule,
+                            subjects = Utils.GetSubjects(schedule),
+                            status = 200
+                        });
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        status = 404
+                    });
+                }
             }
+
+            return new JsonResult(new
+            {
+                status = 404
+            });
         }
 
         [HttpPost]
         [Route("addSchedule/")]
         public JsonResult AddSchedule([FromBody] ScheduleItem scheduleItem)
         {
-            try
+            if (scheduleItem != null)
             {
-                _databaseService.Add("Schedule", scheduleItem);
-            }
-            catch (Exception e)
-            {
+                try
+                {
+                    _databaseService.Add("Schedule", scheduleItem);
+                }
+                catch (Exception e)
+                {
+                    return new JsonResult(new
+                    {
+                        message = "Ошибка при добавлении расписания!" +
+                                  " Попробуйте позже",
+                        status = 502
+                    });
+                }
+
                 return new JsonResult(new
                 {
-                    message = "Ошибка при добавлении расписания!" +
-                              " Попробуйте позже",
-                    status = 502
+                    message = "Расписание успешно добавлено",
+                    status = 200
                 });
             }
 
             return new JsonResult(new
             {
-                message = "Расписание успешно добавлено",
-                status = 200
+                status = 404
+            });
+        }
+
+        [HttpPost]
+        [Route("changeSchedule/")]
+        public JsonResult ChangeSchedule([FromBody] ScheduleItem scheduleItem)
+        {
+            if (scheduleItem != null)
+            {
+                try
+                {
+                    _databaseService.ChangeSchedule(scheduleItem);
+                }
+                catch (Exception e)
+                {
+                    return new JsonResult(new
+                    {
+                        message = "Ошибка при изменении расписания! " +
+                                  "Попробуйте позже",
+                        status = 502
+                    });
+                }
+
+                return new JsonResult(new
+                {
+                    message = "Расписание успешно изменено",
+                    Status = 200
+                });
+            }
+
+            return new JsonResult(new
+            {
+                status = 404
             });
         }
     }

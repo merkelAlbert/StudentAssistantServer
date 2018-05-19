@@ -24,7 +24,6 @@ namespace StudentAssistantServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<DatabaseService>();
-            
             services.AddMvc();
 
             

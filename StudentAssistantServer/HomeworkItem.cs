@@ -9,8 +9,7 @@ namespace StudentAssistantServer
         [BsonElement("userId")] public string UserId { get; set; }
         [BsonElement("subject")] public string Subject { get; set; }
         [BsonElement("exercise")] public string Exercise { get; set; }
-        [BsonElement("time")] public int Time { get; set; }
-        
+        [BsonElement("week")] public int Week { get; set; }
     }
     
 }

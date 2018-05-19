@@ -36,11 +36,25 @@ namespace StudentAssistantServer
         }
 
 
+        public async void ChangeUserInfo(UserInfoItem userInfoItem)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("userId", userInfoItem.UserId);
+            var collection = Db.GetCollection<BsonDocument>("UsersInfo");
+            await collection.ReplaceOneAsync(filter, userInfoItem.ToBsonDocument());
+        }
+        
         public async void ChangeHomework(HomeworkItem homeworkItem)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(homeworkItem.Id));
             var collection = Db.GetCollection<BsonDocument>("Homework");
             await collection.ReplaceOneAsync(filter, homeworkItem.ToBsonDocument());
+        }
+
+        public async void ChangeSchedule(ScheduleItem scheduleItem)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(scheduleItem.Id));
+            var collection = Db.GetCollection<BsonDocument>("Schedule");
+            await collection.ReplaceOneAsync(filter, scheduleItem.ToBsonDocument());
         }
 
         public async void Add<T>(String collectionName, T item) where T : IDatabaseItem
