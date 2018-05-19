@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json.Linq;
 
-namespace StudentAssistantServer
+namespace StudentAssistantServer.DatabaseObjects
 {
 
     public class ScheduleItem : IDatabaseItem

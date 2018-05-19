@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using StudentAssistantServer.DatabaseObjects;
 
 namespace StudentAssistantServer.Controllers
 {

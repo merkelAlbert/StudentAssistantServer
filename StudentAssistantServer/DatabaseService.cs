@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using StudentAssistantServer.DatabaseObjects;
 
 namespace StudentAssistantServer
 {
@@ -35,6 +36,19 @@ namespace StudentAssistantServer
             return null;
         }
 
+
+        public async void PassHomework(List<HomeworkItem> homeworkItems)
+        {
+            var collection = Db.GetCollection<BsonDocument>("Homework");
+            var models = new List<WriteModel<BsonDocument>>();
+            foreach (var item in homeworkItems)
+            {
+                var id = new ObjectId(item.Id);
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+                models.Add(new ReplaceOneModel<BsonDocument>(filter,item.ToBsonDocument()));
+            }
+           await collection.BulkWriteAsync(models);
+        }
 
         public async void ChangeUserInfo(UserInfoItem userInfoItem)
         {

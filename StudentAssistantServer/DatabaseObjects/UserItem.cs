@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace StudentAssistantServer
+namespace StudentAssistantServer.DatabaseObjects
 {
     public class UserItem : IDatabaseItem
     {

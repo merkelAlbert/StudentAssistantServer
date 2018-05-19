@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace StudentAssistantServer
+namespace StudentAssistantServer.DatabaseObjects
 {
     public class HomeworkItem : IDatabaseItem
     {
@@ -10,6 +10,7 @@ namespace StudentAssistantServer
         [BsonElement("subject")] public string Subject { get; set; }
         [BsonElement("exercise")] public string Exercise { get; set; }
         [BsonElement("week")] public int Week { get; set; }
+        [BsonElement("passed")] public bool Passed { get; set; }
     }
     
 }

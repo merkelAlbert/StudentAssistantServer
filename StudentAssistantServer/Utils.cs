@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Google.Protobuf.WellKnownTypes;
+using StudentAssistantServer.DatabaseObjects;
 
 namespace StudentAssistantServer
 {

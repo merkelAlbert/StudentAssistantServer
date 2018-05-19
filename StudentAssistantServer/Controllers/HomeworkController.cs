@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Newtonsoft.Json.Linq;
+using StudentAssistantServer.DatabaseObjects;
 
 namespace StudentAssistantServer.Controllers
 {
@@ -186,14 +188,45 @@ namespace StudentAssistantServer.Controllers
                 status = 404
             });
         }
-        
-        
+
+
         [HttpPost]
-        [Route("changeHomework/")]
-        public void PassHomework(List<HomeworkItem> homeworkItems)
+        [Route("passHomework/")]
+        public string PassHomework([FromBody] List<HomeworkItem> homeworkItems)
         {
             
-        }
+            JArray errRes;//because volley expect JSONArray when it sends JSONArray
+            JObject errJObject;
+            if (homeworkItems != null)
+            {
+                try
+                {
+                    _databaseService.PassHomework(homeworkItems);
+                }
+                catch (Exception e)
+                {
+                    errRes = new JArray();
+                    errJObject = new JObject();
+                    errJObject.Add("message", "Ошибка при сдаче домашнего задания! " +
+                                           "Попробуйте позже");
+                    errJObject.Add("status", 502);
+                    errRes.Add(errJObject);
+                    return errRes.ToString();
+                }
 
+                JArray res = new JArray();
+                JObject jObject = new JObject();
+                jObject.Add("message", "Домашнее задание успеешно сдано ");
+                jObject.Add("status", 200);
+                res.Add(jObject);
+                return res.ToString();
+            }
+
+            errRes = new JArray();
+            errJObject = new JObject();
+            errJObject.Add("status", 404);
+            errRes.Add(errJObject);
+            return errRes.ToString();
+        }
     }
 }
