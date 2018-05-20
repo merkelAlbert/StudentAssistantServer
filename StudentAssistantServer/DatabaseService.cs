@@ -50,6 +50,19 @@ namespace StudentAssistantServer
            await collection.BulkWriteAsync(models);
         }
 
+        public async void DeleteHomework(List<string> ids)
+        {
+            var collection = Db.GetCollection<BsonDocument>("Homework");
+            var models = new List<WriteModel<BsonDocument>>();
+            foreach (var item in ids)
+            {
+                var id = new ObjectId(item);
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+                models.Add(new DeleteOneModel<BsonDocument>(filter));
+            }
+            await collection.BulkWriteAsync(models);
+        }
+        
         public async void ChangeUserInfo(UserInfoItem userInfoItem)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("userId", userInfoItem.UserId);

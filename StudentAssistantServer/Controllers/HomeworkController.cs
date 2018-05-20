@@ -23,8 +23,8 @@ namespace StudentAssistantServer.Controllers
         {
             if (userId != null)
             {
-                //Console.WriteLine(Utils.GetWeekNumber(new DateTime(2018, 2, 7)));
-                var homeworkFilter = Builders<HomeworkItem>.Filter.Eq("userId", userId);
+                var homeworkFilter = Builders<HomeworkItem>.Filter.Eq("userId", userId)
+                                     & Builders<HomeworkItem>.Filter.Eq("passed", false);
                 var userFilter = Builders<UserInfoItem>.Filter.Eq("userId", userId);
                 var scheduleFilter = Builders<ScheduleItem>.Filter.Eq("userId", userId);
 
@@ -32,22 +32,23 @@ namespace StudentAssistantServer.Controllers
                 var userResult = _databaseService.GetItemsByFilter("UsersInfo", userFilter);
                 var scheduleResult = _databaseService.GetItemsByFilter("Schedule", scheduleFilter);
 
-                if (scheduleResult == null)
-                {
-                    scheduleResult = new List<ScheduleItem>();
-                }
-
-                if (userResult == null)
-                {
-                    return new JsonResult(new
-                    {
-                        message = "Заполните информацию о пользователе",
-                        status = 404
-                    });
-                }
-
+               
                 if (homeworkResult != null)
                 {
+                    if (scheduleResult == null)
+                    {
+                        scheduleResult = new List<ScheduleItem>();
+                    }
+
+                    if (userResult == null)
+                    {
+                        return new JsonResult(new
+                        {
+                            message = "Заполните информацию о пользователе",
+                            status = 404
+                        });
+                    }
+                    
                     var remainedList = new List<int>();
                     foreach (var homework in homeworkResult)
                     {
@@ -194,8 +195,7 @@ namespace StudentAssistantServer.Controllers
         [Route("passHomework/")]
         public string PassHomework([FromBody] List<HomeworkItem> homeworkItems)
         {
-            
-            JArray errRes;//because volley expect JSONArray when it sends JSONArray
+            JArray errRes; //because volley expect JSONArray when it sends JSONArray
             JObject errJObject;
             if (homeworkItems != null)
             {
@@ -208,7 +208,7 @@ namespace StudentAssistantServer.Controllers
                     errRes = new JArray();
                     errJObject = new JObject();
                     errJObject.Add("message", "Ошибка при сдаче домашнего задания! " +
-                                           "Попробуйте позже");
+                                              "Попробуйте позже");
                     errJObject.Add("status", 502);
                     errRes.Add(errJObject);
                     return errRes.ToString();
@@ -217,6 +217,45 @@ namespace StudentAssistantServer.Controllers
                 JArray res = new JArray();
                 JObject jObject = new JObject();
                 jObject.Add("message", "Домашнее задание успеешно сдано ");
+                jObject.Add("status", 200);
+                res.Add(jObject);
+                return res.ToString();
+            }
+
+            errRes = new JArray();
+            errJObject = new JObject();
+            errJObject.Add("status", 404);
+            errRes.Add(errJObject);
+            return errRes.ToString();
+        }
+
+
+        [HttpPost]
+        [Route("deleteHomework/")]
+        public string DeleteHomework([FromBody] List<String> ids)
+        {
+            JArray errRes; //because volley expect JSONArray when it sends JSONArray
+            JObject errJObject;
+            if (ids != null)
+            {
+                try
+                {
+                    _databaseService.DeleteHomework(ids);
+                }
+                catch (Exception e)
+                {
+                    errRes = new JArray();
+                    errJObject = new JObject();
+                    errJObject.Add("message", "Ошибка при удалении домашнего задания! " +
+                                              "Попробуйте позже");
+                    errJObject.Add("status", 502);
+                    errRes.Add(errJObject);
+                    return errRes.ToString();
+                }
+
+                JArray res = new JArray();
+                JObject jObject = new JObject();
+                jObject.Add("message", "Домашнее задание успеешно удалено ");
                 jObject.Add("status", 200);
                 res.Add(jObject);
                 return res.ToString();

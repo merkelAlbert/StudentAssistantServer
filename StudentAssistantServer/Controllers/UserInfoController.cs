@@ -23,11 +23,17 @@ namespace StudentAssistantServer.Controllers
         {
             if (userId != null)
             {
-                //Console.WriteLine(Utils.GetWeekNumber(new DateTime(2018, 2, 7)));
                 var iiFilter = Builders<UserInfoItem>.Filter.Eq("userId", userId);
                 var userInfo = _databaseService.GetItemsByFilter("UsersInfo", iiFilter);
 
-                var hwFilter = Builders<HomeworkItem>.Filter.Eq("userId", userId);
+                var hwFilter = Builders<HomeworkItem>.Filter.Eq("userId", userId)
+                               & Builders<HomeworkItem>.Filter.Eq("passed", false);
+
+                var passedFilter = Builders<HomeworkItem>.Filter.Eq("userId", userId)
+                                   & Builders<HomeworkItem>.Filter.Eq("passed", true);
+
+                var passed = _databaseService.GetItemsByFilter("Homework", passedFilter) ?? new List<HomeworkItem>();
+                
                 var homework = _databaseService.GetItemsByFilter("Homework", hwFilter) ?? new List<HomeworkItem>();
                 if (userInfo != null)
                 {
@@ -36,6 +42,7 @@ namespace StudentAssistantServer.Controllers
                         userInfo = userInfo[0],
                         currentWeek = Utils.GetCurrentWeek(userInfo[0].StartDate),
                         totalHomework = homework.Count,
+                        totalPassed = passed.Count,
                         status = 200
                     });
                 }

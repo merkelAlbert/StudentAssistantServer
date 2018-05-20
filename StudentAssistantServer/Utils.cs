@@ -10,7 +10,6 @@ namespace StudentAssistantServer
     {
         public static int GetCurrentWeek(string startDateStr)
         {
-            
             DateTime startDate = DateTime.ParseExact(startDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             while (!startDate.Date.DayOfWeek.Equals(DayOfWeek.Sunday))
             {
@@ -26,44 +25,12 @@ namespace StudentAssistantServer
         public static int GetRemainedDays(UserInfoItem userInfo, HomeworkItem homework, ScheduleItem schedule)
         {
             int currentWeek = Utils.GetCurrentWeek(userInfo.StartDate);
-            
-            SubjectCoords coords = new SubjectCoords();
-            for (int i = 0; i < schedule.Schedule.Count; i++)
-            {
-                for (int j = 0; j < schedule.Schedule[i].Count; j++)
-                {
-                    if (homework.Week % 2 == 0)
-                    {
-                        if (schedule.Schedule[i][j][0] == homework.Subject)
-                        {
-                            coords.DayOfWeek = i;
-                            coords.SubjectNumber = j;
-                            coords.WeekType = 0;
-                        }
-                    }
-                    else
-                    {
-                        if (schedule.Schedule[i][j][1] == homework.Subject)
-                        {
-                            coords.DayOfWeek = i;
-                            coords.SubjectNumber = j;
-                            coords.WeekType = 1;
-                        }
-                    }
-                }
-            }
-            
-            int days = 0;
-            if (coords.DayOfWeek >= Convert.ToInt32(DateTime.Now.DayOfWeek))
-            {
-                days = (homework.Week - currentWeek) * 7 + (coords.DayOfWeek - Convert.ToInt32(DateTime.Now.DayOfWeek));
-            }
-            else
-            {
-                days = (homework.Week - currentWeek) * 7 - (Convert.ToInt32(DateTime.Now.DayOfWeek) - coords.DayOfWeek);
-            }
 
-            days++;
+            SubjectCoords coords = GetSubjectCoords(homework, schedule);
+
+            int days = 0;
+            int today = (Convert.ToInt32(DateTime.Now.DayOfWeek) + 6) % 7;
+            days = (homework.Week - currentWeek) * 7 + (coords.DayOfWeek - today);
             return days;
         }
 
@@ -128,6 +95,39 @@ namespace StudentAssistantServer
             }
 
             return list;
+        }
+
+        private static SubjectCoords GetSubjectCoords(HomeworkItem homework, ScheduleItem schedule)
+        {
+            SubjectCoords coords = new SubjectCoords();
+            for (int i = 0; i < schedule.Schedule.Count; i++)
+            {
+                for (int j = 0; j < schedule.Schedule[i].Count; j++)
+                {
+                    if (homework.Week % 2 != 0)
+                    {
+                        if (schedule.Schedule[i][j][0] == homework.Subject)
+                        {
+                            coords.DayOfWeek = i;
+                            coords.SubjectNumber = j;
+                            coords.WeekType = 0;
+                            return coords;
+                        }
+                    }
+                    else
+                    {
+                        if (schedule.Schedule[i][j][1] == homework.Subject)
+                        {
+                            coords.DayOfWeek = i;
+                            coords.SubjectNumber = j;
+                            coords.WeekType = 1;
+                            return coords;
+                        }
+                    }
+                }
+            }
+
+            return coords;
         }
     }
 }
