@@ -121,5 +121,38 @@ namespace StudentAssistantServer.Controllers
                 status = 404
             });
         }
+        
+        [HttpGet]
+        [Route("clearData/{userId}")]
+        public JsonResult ClearData([FromRoute] string userId)
+        {
+            if (userId != null)
+            {
+                try
+                {
+                    _databaseService.ClearData(userId);
+                }
+                catch (Exception e)
+                {
+                    return new JsonResult(new
+                    {
+                        message = "Ошибка при удалении данных! " +
+                                  "Попробуйте позже",
+                        status = 502
+                    });
+                }
+
+                return new JsonResult(new
+                {
+                    message = "Данные успешно удалены",
+                    Status = 200
+                });
+            }
+
+            return new JsonResult(new
+            {
+                status = 404
+            });
+        }
     }
 }

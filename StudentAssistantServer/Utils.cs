@@ -126,7 +126,6 @@ namespace StudentAssistantServer
                     }
                 }
             }
-
             return coords;
         }
     }

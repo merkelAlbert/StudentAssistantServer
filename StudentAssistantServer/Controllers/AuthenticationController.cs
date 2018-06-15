@@ -97,5 +97,38 @@ namespace StudentAssistantServer.Controllers
                 status = 404
             });
         }
+        
+        [HttpGet]
+        [Route("removeAccount/{userId}")]
+        public JsonResult RemoveAccount([FromRoute] string userId)
+        {
+            if (userId != null)
+            {
+                try
+                {
+                    _databaseService.RemoveAccount(userId);
+                }
+                catch (Exception e)
+                {
+                    return new JsonResult(new
+                    {
+                        message = "Ошибка при удалении аккаунта! " +
+                                  "Попробуйте позже",
+                        status = 502
+                    });
+                }
+
+                return new JsonResult(new
+                {
+                    message = "Аккаунт успешно удален",
+                    Status = 200
+                });
+            }
+
+            return new JsonResult(new
+            {
+                status = 404
+            });
+        }
     }
 }

@@ -115,5 +115,38 @@ namespace StudentAssistantServer.Controllers
                 status = 404
             });
         }
+
+        [HttpGet]
+        [Route("clearSchedule/{userId}")]
+        public JsonResult ClearSchedule([FromRoute] string userId)
+        {
+            if (userId != null)
+            {
+                try
+                {
+                    _databaseService.ClearSchedule(userId);
+                }
+                catch (Exception e)
+                {
+                    return new JsonResult(new
+                    {
+                        message = "Ошибка при удалении расписания! " +
+                                  "Попробуйте позже",
+                        status = 502
+                    });
+                }
+
+                return new JsonResult(new
+                {
+                    message = "Расписание успешно удалено",
+                    Status = 200
+                });
+            }
+
+            return new JsonResult(new
+            {
+                status = 404
+            });
+        }
     }
 }
