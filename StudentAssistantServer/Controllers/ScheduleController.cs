@@ -125,6 +125,7 @@ namespace StudentAssistantServer.Controllers
                 try
                 {
                     _databaseService.ClearSchedule(userId);
+                    _databaseService.ClearHomeworks(userId);
                 }
                 catch (Exception e)
                 {

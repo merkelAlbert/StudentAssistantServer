@@ -101,7 +101,6 @@ namespace StudentAssistantServer
             await collection.DeleteOneAsync(filter);
         }
 
-
         public async void ClearUserInfo(string userId)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("userId", userId);
@@ -109,14 +108,14 @@ namespace StudentAssistantServer
             await collection.DeleteOneAsync(filter);
         }
 
-        public async void ClearData(string userId)
+        public void ClearData(string userId)
         {
-            ClearUserInfo(userId);
+           ClearUserInfo(userId);
             ClearSchedule(userId);
             ClearHomeworks(userId);
         }
-
-
+        
+        
         public async void Add<T>(String collectionName, T item) where T : IDatabaseItem
         {
             var collection = Db.GetCollection<BsonDocument>(collectionName);
