@@ -31,10 +31,6 @@ namespace StudentAssistantServer
             int days = 0;
             int today = (Convert.ToInt32(DateTime.Now.DayOfWeek) + 6) % 7;
             days = (homework.Week - currentWeek) * 7 + (coords.DayOfWeek - today);
-            
-            //0-ая Неделя
-            if (currentWeek <= 0)
-                days += 7;
             return days;
         }
 
