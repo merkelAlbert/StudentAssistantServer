@@ -32,6 +32,7 @@ namespace StudentAssistantServer.Controllers
                         {
                             schedule = schedule,
                             subjects = Utils.GetSubjects(schedule),
+                            currentDay = DateTime.Now.DayOfWeek - 1,
                             status = 200
                         });
                 }
