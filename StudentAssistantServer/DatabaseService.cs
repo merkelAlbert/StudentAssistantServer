@@ -80,6 +80,13 @@ namespace StudentAssistantServer
             await collection.ReplaceOneAsync(filter, userInfoItem.ToBsonDocument());
         }
 
+        public async void ChangeTeachers(TeachersItem teachersItem)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(teachersItem.Id));
+            var collection = Db.GetCollection<BsonDocument>("Teachers");
+            await collection.ReplaceOneAsync(filter, teachersItem.ToBsonDocument());
+        }
+
         public async void ChangeHomework(HomeworkItem homeworkItem)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(homeworkItem.Id));
@@ -108,14 +115,22 @@ namespace StudentAssistantServer
             await collection.DeleteOneAsync(filter);
         }
 
+        public async void ClearTeachers(string userId)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("userId", userId);
+            var collection = Db.GetCollection<BsonDocument>("Teachers");
+            await collection.DeleteOneAsync(filter);
+        }
+
         public void ClearData(string userId)
         {
-           ClearUserInfo(userId);
+            ClearUserInfo(userId);
             ClearSchedule(userId);
             ClearHomeworks(userId);
+            ClearTeachers(userId);
         }
-        
-        
+
+
         public async void Add<T>(String collectionName, T item) where T : IDatabaseItem
         {
             var collection = Db.GetCollection<BsonDocument>(collectionName);
