@@ -28,13 +28,18 @@ namespace StudentAssistantServer.Controllers
         if (_databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter) != null)
         {
           var schedule = _databaseService.GetItemsByFilter<ScheduleItem>("Schedule", filter)[0];
+          var teachers = new TeachersItem();
+          if (_databaseService.GetItemsByFilter<TeachersItem>("Teachers", teachersFilter) != null)
+          {
+            teachers = _databaseService.GetItemsByFilter<TeachersItem>("Teachers", teachersFilter)[0];
+          }
           return new JsonResult(
               new
               {
                 schedule = schedule,
                 subjects = Utils.GetSubjects(schedule),
                 currentDay = DateTime.Now.DayOfWeek - 1,
-                teachers = _databaseService.GetItemsByFilter<TeachersItem>("Teachers", teachersFilter)[0],
+                teachers = teachers,
                 status = 200
               });
         }
